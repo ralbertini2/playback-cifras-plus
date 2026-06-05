@@ -60,7 +60,7 @@ function bindEvents(){
   els.refreshBtn.addEventListener('click', refreshLibrary);
   els.clearFolderBtn.addEventListener('click', clearFolder);
   els.styleSelect.addEventListener('change',()=>{localStorage.setItem(STORAGE.style,els.styleSelect.value);applyFilters();});
-  els.searchInput.addEventListener('input', applyFilters);
+  if(els.searchInput) els.searchInput.addEventListener('input', applyFilters);
   els.prevBtn.addEventListener('click', prevSong);
   els.nextBtn.addEventListener('click', nextSong);
   els.playBtn.addEventListener('click', togglePlay);
@@ -375,7 +375,7 @@ function renderStyles(){
 function applyFilters(){
   const style = els.styleSelect.value;
   const playlist = els.playlistSelect.value;
-  const q = removeAccents(els.searchInput.value.trim().toLowerCase());
+  const q = els.searchInput && els.searchInput.type !== 'hidden' ? removeAccents(els.searchInput.value.trim().toLowerCase()) : '';
   const favs = getFavorites();
   const playlists = getPlaylists();
   filteredSongs = library.filter(s=>{
@@ -393,9 +393,8 @@ function applyFilters(){
 function renderSongs(){
   els.songList.innerHTML = filteredSongs.map((s,i)=>`
     <button type="button" class="song-item ${i===currentIndex?'active':''}" data-index="${i}">
-      <span class="song-art" aria-hidden="true">${String(i+1).padStart(2,'0')}</span>
+      <span class="song-art" aria-hidden="true">♪</span>
       <span class="song-copy"><strong>${escapeHtml(s.title)}</strong><small>${escapeHtml(s.style)}</small></span>
-      <span class="song-badge" aria-hidden="true">PDF · MP3</span>
     </button>`).join('');
   els.songList.querySelectorAll('.song-item').forEach(el=>el.addEventListener('click',()=>{loadSong(Number(el.dataset.index), true); els.sidebar.classList.remove('open');}));
 }

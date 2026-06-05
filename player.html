@@ -28,8 +28,10 @@
         <div class="row gap hidden-drive-id" aria-hidden="true">
           <input id="folderIdInput" type="text" placeholder="ID da pasta principal" autocomplete="off" tabindex="-1" />
         </div>
-        <button id="pickFolderBtn" class="secondary-btn">Selecionar pasta no Drive</button>
-        <button id="refreshBtn" class="secondary-btn">Atualizar biblioteca</button>
+        <div class="drive-actions" aria-label="Ações do Google Drive">
+          <button id="pickFolderBtn" class="drive-icon-btn" type="button" title="Selecionar pasta no Drive" aria-label="Selecionar pasta no Drive">📁</button>
+          <button id="refreshBtn" class="drive-icon-btn" type="button" title="Atualizar biblioteca" aria-label="Atualizar biblioteca">↻</button>
+        </div>
         <button id="clearFolderBtn" class="ghost-btn hidden-action" type="button" aria-hidden="true" tabindex="-1">Esquecer pasta salva</button>
         <p class="hint">Selecione uma pasta principal com subpastas por estilo ou uma pasta direta de músicas. PDF e MP3 devem ter o mesmo nome.</p>
       </section>
@@ -44,20 +46,11 @@
           <button id="addPlaylistBtn" class="ghost-btn">Adicionar</button>
           <button id="deletePlaylistBtn" class="ghost-btn">Excluir</button>
         </div>
-        <div class="button-grid two-cols">
-          <button id="movePlaylistUpBtn" class="ghost-btn">Mover ↑</button>
-          <button id="movePlaylistDownBtn" class="ghost-btn">Mover ↓</button>
-        </div>
-        <input id="searchInput" type="search" placeholder="Buscar música..." />
+        <input id="searchInput" type="hidden" value="" />
       </section>
 
       <section id="songList" class="song-list"></section>
 
-      <section class="panel compact-panel">
-        <label>Histórico</label>
-        <div id="historyList" class="history-list"></div>
-        <button id="clearHistoryBtn" class="ghost-btn">Limpar histórico</button>
-      </section>
     </aside>
 
     <main class="main">
