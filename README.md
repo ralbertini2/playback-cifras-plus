@@ -1,81 +1,73 @@
-# Playback Cifras+ Business Alpha
+# Playback Cifras v12.1 — ajustes da v12 normal
 
-Base: Playback Cifras v12-2 estável.
+Base: Playback Cifras v12.
 
-Subtítulo: **A forma mais inteligente de organizar seu repertório.**
+## Ajustes aplicados
 
-## Objetivo
-Transformar a interface atual em uma versão comercial inicial, mantendo as funcionalidades existentes.
+- Uso do logo anexado pelo usuário (`logo-playback-cifras.jpg`) no topo esquerdo.
+- Correção do scroll do menu lateral em telas pequenas.
+- Rodapé compacto com apenas três botões: **Voltar**, **Tocar/Pausar** e **Próxima**.
+- Botões inferiores mantidos dentro da tela, sem rolagem horizontal.
+- Ícone de pausa corrigido para padrão flat via CSS, sem emoji.
 
-## Estrutura analisada
-- `index.html`: layout principal, sidebar, visualizador PDF, player e navegação.
-- `styles.css`: tema, responsivo, rodapé, menu lateral e componentes visuais.
-- `app.js`: login Google, Google Drive, biblioteca, PDF, MP3, player, favoritos, playlists, zoom, rolagem e navegação.
-- `config.js`: Client ID e API Key do Google.
-- `manifest.webmanifest`: instalação PWA.
-- `service-worker.js`: cache do app.
+## Funcionalidades preservadas
+
+- Login Google.
+- Leitura do Google Drive.
+- Seletor de pasta.
+- Abertura de PDFs.
+- Execução de MP3.
+- Favoritos, playlists, zoom, rolagem e navegação atual.
 
 ## Arquivos alterados
+
 - `index.html`
 - `styles.css`
 - `app.js`
 - `README.md`
 
 ## Arquivos criados
-- Nenhum arquivo funcional novo. A versão usa os assets já existentes, incluindo `logo-playback-cifras.jpg`.
 
-## Alterações aplicadas
-- Marca atualizada para **Playback Cifras+**.
-- Subtítulo comercial incluído: “A forma mais inteligente de organizar seu repertório.”
-- Identificação visual: **Business Alpha · v12+**.
-- Logo pequeno no topo esquerdo.
-- Layout escuro, limpo e mais comercial.
-- Barra inferior com botões grandes e flat:
-  - Músicas
-  - Categorias
-  - Favoritos
-  - Setlists
-  - Configurações
-- Telas/abas iniciais para Setlists e Configurações.
-- Favoritos e Categorias reaproveitam a lógica atual sem alterar a estrutura do Drive.
-- Responsivo ajustado para celular, tablet/iPad e desktop.
-
-## Funcionalidades preservadas
-- Login Google.
-- Leitura do Google Drive.
-- Seleção de pasta do Drive.
-- Abertura de PDFs.
-- Execução dos MP3s.
-- Navegação anterior/próxima.
-- Zoom do PDF.
-- Rolagem automática.
-- Favoritos.
-- Playlists/eventos.
-- Modo palco.
-- Tela cheia.
-
-## Não alterado nesta versão
-- Lógica de sincronização do Drive.
-- Modelo de assinatura.
-- Banco de dados.
-- Pagamento.
-- Limite de usuários.
+- `logo-playback-cifras.jpg`
 
 ## Testes realizados
+
+- Validação de sintaxe JavaScript com `node --check app.js`.
+- Verificação da presença dos IDs essenciais usados pelo JavaScript.
+- Conferência dos arquivos esperados no pacote final.
+
+## Observações
+
+Após subir no GitHub, recoloque em `config.js`:
+
+- `GOOGLE_CLIENT_ID`
+- `GOOGLE_API_KEY`
+
+
+## Playback Cifras v12.2 — Ajustes
+
+### Arquivos alterados
+- `styles.css`
+- `README.md`
+
+### Ajustes aplicados
+- O menu lateral no celular/iPad agora fica acima do rodapé, permitindo acessar a lista completa de músicas.
+- O rodapé recebeu maior respiro inferior para não ficar colado ao limite da tela.
+- O zoom interno do PDF foi corrigido para não esticar o documento: o canvas não é mais comprimido por `max-width` enquanto mantém altura fixa.
+
+### Funcionalidades preservadas
+- Login Google.
+- Leitura do Google Drive.
+- Abertura de PDFs.
+- Reprodução dos MP3s.
+- Navegação anterior/próxima.
+- Favoritos, playlists, zoom, rolagem e cache existentes.
+
+### Testes realizados
 - Verificação de sintaxe JavaScript com `node --check app.js`.
-- Validação da presença dos IDs usados pelo app no HTML.
-- Teste de empacotamento ZIP.
-- Verificação estática de `index.html`, `styles.css` e `app.js`.
+- Inspeção dos seletores CSS alterados.
+- Geração do pacote ZIP para envio ao GitHub.
 
-## Possíveis riscos
-- A barra inferior comercial aumenta a altura do rodapé e pode reduzir a área visível do PDF em telas pequenas.
-- O Google Drive/OAuth precisa do `GOOGLE_CLIENT_ID` e `GOOGLE_API_KEY` reais após o upload ao GitHub.
-- O cache do PWA pode exigir atualização forçada ou remoção/reinstalação na tela inicial do iPad após trocar a versão.
-
-## Configuração após subir no GitHub
-Editar `config.js` e inserir novamente:
-
-```js
-GOOGLE_CLIENT_ID: "SEU_CLIENT_ID",
-GOOGLE_API_KEY: "SUA_API_KEY",
-```
+### Possíveis riscos
+- Em alguns navegadores mobile, a barra inferior do navegador pode reduzir a área útil. Ao instalar como PWA na tela inicial, a área disponível tende a melhorar.
+- PDFs muito largos em zoom alto podem exigir rolagem horizontal no modo interno, preservando a proporção correta.

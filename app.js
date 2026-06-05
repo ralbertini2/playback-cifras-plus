@@ -10,7 +10,8 @@ const STORAGE = {
   activePlaylist: 'pc_active_playlist',
   library: 'pc_library_cache_v1',
   connected: 'pc_google_connected',
-  pdfZoom: 'pc_pdf_zoom'
+  pdfZoom: 'pc_pdf_zoom',
+  history: 'pc_history_v1'
 };
 
 const els = {};
@@ -49,7 +50,7 @@ function init(){
 }
 
 function bindEls(){
-  ['googleBtn','logoutBtn','loginStatus','folderIdInput','pickFolderBtn','refreshBtn','clearFolderBtn','styleSelect','searchInput','songList','songTitle','songMeta','pdfFrame','pdfScroll','emptyState','audio','prevBtn','nextBtn','playBtn','rewindBtn','forwardBtn','repeatBtn','playlistOpenBtn','seekBar','currentTimeLabel','durationLabel','stageBtn','fullscreenBtn','sidebar','toggleSidebar','showSidebar','toast','favoriteBtn','playlistSelect','newPlaylistBtn','addPlaylistBtn','deletePlaylistBtn','zoomOutBtn','zoomLabel','zoomInBtn','autoScrollBtn','speedDownBtn','speedUpBtn','speedLabel','tabSongsBtn','tabCategoriesBtn','tabFavoritesBtn','tabSetlistsBtn','tabSettingsBtn','businessView','businessTitle','businessText','businessActions'].forEach(id=>els[id]=document.getElementById(id));
+  ['googleBtn','logoutBtn','loginStatus','folderIdInput','pickFolderBtn','refreshBtn','clearFolderBtn','styleSelect','searchInput','songList','songTitle','songMeta','pdfFrame','pdfScroll','emptyState','audio','prevBtn','nextBtn','playBtn','rewindBtn','forwardBtn','repeatBtn','playlistOpenBtn','seekBar','currentTimeLabel','durationLabel','stageBtn','fullscreenBtn','sidebar','toggleSidebar','showSidebar','toast','favoriteBtn','playlistSelect','newPlaylistBtn','addPlaylistBtn','deletePlaylistBtn','zoomOutBtn','zoomLabel','zoomInBtn','autoScrollBtn','speedDownBtn','speedUpBtn','speedLabel','movePlaylistUpBtn','movePlaylistDownBtn','historyList','clearHistoryBtn','navSongsBtn','navCategoriesBtn','navFavoritesBtn','navSetlistsBtn','navSettingsBtn'].forEach(id=>els[id]=document.getElementById(id));
 }
 
 function bindEvents(){
@@ -88,15 +89,16 @@ function bindEvents(){
   els.audio.addEventListener('loadedmetadata', updateTimeline);
   els.audio.addEventListener('durationchange', updateTimeline);
   els.audio.addEventListener('ended',()=>{setPlayButton(false); updateTimeline();});
-
-  if(els.tabSongsBtn) els.tabSongsBtn.addEventListener('click',()=>showBusinessTab('songs'));
-  if(els.tabCategoriesBtn) els.tabCategoriesBtn.addEventListener('click',()=>showBusinessTab('categories'));
-  if(els.tabFavoritesBtn) els.tabFavoritesBtn.addEventListener('click',()=>showBusinessTab('favorites'));
-  if(els.tabSetlistsBtn) els.tabSetlistsBtn.addEventListener('click',()=>showBusinessTab('setlists'));
-  if(els.tabSettingsBtn) els.tabSettingsBtn.addEventListener('click',()=>showBusinessTab('settings'));
+  if(els.movePlaylistUpBtn) els.movePlaylistUpBtn.addEventListener('click',()=>moveCurrentInPlaylist(-1));
+  if(els.movePlaylistDownBtn) els.movePlaylistDownBtn.addEventListener('click',()=>moveCurrentInPlaylist(1));
+  if(els.clearHistoryBtn) els.clearHistoryBtn.addEventListener('click', clearHistory);
+  if(els.navSongsBtn) els.navSongsBtn.addEventListener('click', showAllSongs);
+  if(els.navCategoriesBtn) els.navCategoriesBtn.addEventListener('click', showCategories);
+  if(els.navFavoritesBtn) els.navFavoritesBtn.addEventListener('click', showFavorites);
+  if(els.navSetlistsBtn) els.navSetlistsBtn.addEventListener('click', showSetlists);
+  if(els.navSettingsBtn) els.navSettingsBtn.addEventListener('click', showSettings);
   document.addEventListener('keydown', keyboard);
 }
-
 
 function restoreUi(){
   updateLoginUi(localStorage.getItem(STORAGE.connected)==='1');
@@ -106,6 +108,7 @@ function restoreUi(){
   updateStageBtn();
   loadCachedLibrary();
   renderPlaylists();
+  renderHistory();
   updateSpeedLabel();
   updateZoomLabel();
 }
@@ -388,6 +391,7 @@ async function loadSong(index, autoplay=false){
   currentIndex=index;
   const seq = ++audioLoadSeq;
   const song = filteredSongs[index];
+  addHistory(song);
 
   els.songTitle.textContent = song.title;
   els.songMeta.textContent = `${song.style} • ${index+1} de ${filteredSongs.length} • abrindo PDF...`;
@@ -597,7 +601,7 @@ function clearFolder(){
   localStorage.removeItem(STORAGE.folder);
   localStorage.removeItem(STORAGE.library);
   els.folderIdInput.value='';
-  library=[]; filteredSongs=[]; renderStyles(); renderSongs(); clearCurrent();
+  library=[]; filteredSongs=[]; renderStyles(); renderSongs(); renderHistory(); clearCurrent();
   toast('Pasta salva removida deste dispositivo.');
 }
 
@@ -708,59 +712,73 @@ function deletePlaylist(){
   toast('Playlist excluída.');
 }
 
-function showBusinessTab(tab){
-  const tabs = ['tabSongsBtn','tabCategoriesBtn','tabFavoritesBtn','tabSetlistsBtn','tabSettingsBtn'];
-  tabs.forEach(id=>{ if(els[id]) els[id].classList.remove('active'); });
-  const map = {songs:'tabSongsBtn',categories:'tabCategoriesBtn',favorites:'tabFavoritesBtn',setlists:'tabSetlistsBtn',settings:'tabSettingsBtn'};
-  if(els[map[tab]]) els[map[tab]].classList.add('active');
-
-  if(tab === 'songs'){
-    if(els.businessView) els.businessView.hidden = true;
-    if(els.styleSelect){ els.styleSelect.value = ''; localStorage.setItem(STORAGE.style,''); applyFilters(); }
-    return;
-  }
-
-  if(tab === 'categories'){
-    if(els.businessView) els.businessView.hidden = true;
-    if(els.sidebar) els.sidebar.classList.add('open');
-    if(els.styleSelect) els.styleSelect.focus();
-    toast('Escolha um estilo musical no menu lateral.');
-    return;
-  }
-
-  if(tab === 'favorites'){
-    if(els.businessView) els.businessView.hidden = true;
-    if(els.styleSelect){ els.styleSelect.value='__favorites'; localStorage.setItem(STORAGE.style,'__favorites'); applyFilters(); }
-    toast('Exibindo favoritas.');
-    return;
-  }
-
-  const content = {
-    setlists: {
-      title:'Setlists',
-      text:'Estrutura inicial para organizar repertórios por apresentação, culto, ensaio, aula ou evento. Nesta versão Alpha, use o seletor de Playlist / Evento no menu lateral para criar e gerenciar setlists.',
-      actions:[['Abrir menu lateral',()=>els.sidebar?.classList.add('open')],['Criar setlist',createPlaylist]]
-    },
-    settings: {
-      title:'Configurações',
-      text:'Área inicial da versão comercial. As configurações do Google Drive, pasta principal, logout, zoom, rolagem e modo palco continuam disponíveis nas áreas atuais do aplicativo.',
-      actions:[['Abrir menu lateral',()=>els.sidebar?.classList.add('open')],['Sair do Google',logout]]
-    }
-  }[tab];
-
-  if(!content || !els.businessView) return;
-  els.businessTitle.textContent = content.title;
-  els.businessText.textContent = content.text;
-  els.businessActions.innerHTML = '';
-  content.actions.forEach(([label,fn])=>{
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.textContent = label;
-    btn.addEventListener('click',fn);
-    els.businessActions.appendChild(btn);
-  });
-  els.businessView.hidden = false;
+function moveCurrentInPlaylist(direction){
+  const song = filteredSongs[currentIndex];
+  const name = els.playlistSelect?.value;
+  if(!song || !name){ toast('Selecione uma playlist e uma música.'); return; }
+  const playlists = getPlaylists();
+  const list = playlists[name] || [];
+  const key = songKey(song);
+  const pos = list.indexOf(key);
+  if(pos < 0){ toast('Esta música ainda não está nesta setlist.'); return; }
+  const next = pos + direction;
+  if(next < 0 || next >= list.length) return;
+  [list[pos], list[next]] = [list[next], list[pos]];
+  playlists[name] = list;
+  setPlaylists(playlists);
+  applyFilters();
+  currentIndex = next;
+  renderSongs();
+  toast('Ordem da setlist atualizada.');
 }
+
+function getHistory(){ try{return JSON.parse(localStorage.getItem(STORAGE.history)||'[]');}catch{return [];} }
+function setHistory(list){ localStorage.setItem(STORAGE.history, JSON.stringify(list.slice(0,30))); }
+function addHistory(song){
+  if(!song) return;
+  const key = songKey(song);
+  const item = {key, title:song.title, style:song.style, at:Date.now()};
+  const next = [item, ...getHistory().filter(x=>x.key!==key)].slice(0,30);
+  setHistory(next);
+  renderHistory();
+}
+function renderHistory(){
+  if(!els.historyList) return;
+  const hist = getHistory();
+  if(!hist.length){ els.historyList.innerHTML = '<p class="mini-empty">Nenhuma música recente.</p>'; return; }
+  els.historyList.innerHTML = hist.slice(0,10).map(h=>`<button type="button" class="history-item" data-key="${escapeHtml(h.key)}"><strong>${escapeHtml(h.title)}</strong><span>${escapeHtml(h.style||'')}</span></button>`).join('');
+  els.historyList.querySelectorAll('.history-item').forEach(btn=>btn.addEventListener('click',()=>{
+    const key = btn.dataset.key;
+    const idx = filteredSongs.findIndex(s=>songKey(s)===key);
+    if(idx >= 0){ loadSong(idx,true); els.sidebar.classList.remove('open'); return; }
+    const song = library.find(s=>songKey(s)===key);
+    if(song){ els.styleSelect.value = ''; els.playlistSelect.value=''; applyFilters(); const i=filteredSongs.findIndex(s=>songKey(s)===key); if(i>=0) loadSong(i,true); }
+  }));
+}
+function clearHistory(){
+  localStorage.removeItem(STORAGE.history);
+  renderHistory();
+  toast('Histórico limpo.');
+}
+
+function openSidebarAt(selector){
+  els.sidebar.classList.add('open');
+  setTimeout(()=>{ const node = document.querySelector(selector); if(node){ node.scrollIntoView({block:'center'}); if(node.focus) node.focus(); } }, 60);
+}
+function setActiveBottomNav(id){
+  ['navSongsBtn','navCategoriesBtn','navFavoritesBtn','navSetlistsBtn','navSettingsBtn'].forEach(k=>{ if(els[k]) els[k].classList.toggle('active', k===id); });
+}
+function showAllSongs(){
+  setActiveBottomNav('navSongsBtn');
+  els.styleSelect.value=''; els.playlistSelect.value=''; localStorage.removeItem(STORAGE.style); localStorage.removeItem(STORAGE.activePlaylist); applyFilters(); openSidebarAt('#searchInput');
+}
+function showCategories(){ setActiveBottomNav('navCategoriesBtn'); openSidebarAt('#styleSelect'); }
+function showFavorites(){
+  setActiveBottomNav('navFavoritesBtn');
+  els.styleSelect.value='__favorites'; localStorage.setItem(STORAGE.style,'__favorites'); applyFilters(); openSidebarAt('#songList');
+}
+function showSetlists(){ setActiveBottomNav('navSetlistsBtn'); openSidebarAt('#playlistSelect'); }
+function showSettings(){ setActiveBottomNav('navSettingsBtn'); openSidebarAt('#googleBtn'); }
 
 function toggleAutoScroll(){
   if(autoScrollTimer) { stopAutoScroll(true); return; }

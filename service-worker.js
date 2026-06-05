@@ -1,39 +1,22 @@
-const CACHE='playback-cifras-v12';
-const ASSETS=['./','./index.html','./styles.css','./app.js','./manifest.webmanifest','./logo.svg'];
-
-self.addEventListener('install',event=>{
-  event.waitUntil(
-    caches.open(CACHE)
-      .then(cache=>cache.addAll(ASSETS))
-      .then(()=>self.skipWaiting())
-  );
+const CACHE_NAME = 'playback-cifras-plus-business-beta-v1';
+const ASSETS = [
+  './', './index.html', './player.html', './landing.css', './styles.css', './app.js', './manifest.webmanifest',
+  './about.html', './help.html', './privacy.html', './terms.html', './capture.html',
+  './logo-playback-cifras.jpg', './assets/playback-cifras-plus-logo.jpg', './assets/icon-192.png', './assets/icon-512.png'
+];
+self.addEventListener('install', event => {
+  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS.filter(Boolean))).then(()=>self.skipWaiting()));
 });
-
-self.addEventListener('activate',event=>{
-  event.waitUntil(
-    caches.keys()
-      .then(keys=>Promise.all(keys.filter(key=>key!==CACHE && !key.includes('drive-files')).map(key=>caches.delete(key))))
-      .then(()=>self.clients.claim())
-  );
+self.addEventListener('activate', event => {
+  event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE_NAME && k.startsWith('playback-cifras')).map(k => caches.delete(k)))).then(()=>self.clients.claim()));
 });
-
-self.addEventListener('fetch',event=>{
+self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
-  if(url.origin !== location.origin) return;
-
-  if(url.pathname.endsWith('/config.js')){
-    event.respondWith(fetch(event.request, {cache:'no-store'}));
-    return;
-  }
-
-  // Network-first evita ficar preso em versões antigas do app, mas mantém fallback offline.
-  event.respondWith(
-    fetch(event.request, {cache:'no-store'})
-      .then(response=>{
-        const copy=response.clone();
-        caches.open(CACHE).then(cache=>cache.put(event.request, copy)).catch(()=>{});
-        return response;
-      })
-      .catch(()=>caches.match(event.request))
-  );
+  if(url.pathname.endsWith('/config.js') || url.hostname.includes('googleapis.com') || url.hostname.includes('google.com')) return;
+  if(event.request.method !== 'GET') return;
+  event.respondWith(caches.match(event.request).then(cached => cached || fetch(event.request).then(res => {
+    const copy = res.clone();
+    caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy)).catch(()=>{});
+    return res;
+  }).catch(()=>cached)));
 });

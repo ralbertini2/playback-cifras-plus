@@ -3,23 +3,17 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Playback Cifras+ Business Alpha</title>
+  <title>Playback Cifras+ — App</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="manifest" href="manifest.webmanifest" />
-  <meta name="theme-color" content="#070b11" />
+  <meta name="theme-color" content="#05080d" />
+  <link rel="apple-touch-icon" href="assets/icon-192.png" />
 </head>
 <body>
   <div id="app" class="app">
     <aside id="sidebar" class="sidebar">
-      <header class="brand brand-plus">
-        <div class="brand-lockup">
-          <img src="logo-playback-cifras.jpg" alt="Playback Cifras+" class="brand-logo" />
-          <div class="brand-copy">
-            <h1>Playback Cifras<span>+</span></h1>
-            <p>A forma mais inteligente de organizar seu repertório.</p>
-            <small>Plus</small>
-          </div>
-        </div>
+      <header class="brand">
+        <img src="logo-playback-cifras.jpg" alt="Playback Cifras" class="brand-logo" />
         <button id="toggleSidebar" class="icon-btn hide-desktop" title="Ocultar menu">☰</button>
       </header>
 
@@ -50,16 +44,25 @@
           <button id="addPlaylistBtn" class="ghost-btn">Adicionar</button>
           <button id="deletePlaylistBtn" class="ghost-btn">Excluir</button>
         </div>
+        <div class="button-grid two-cols">
+          <button id="movePlaylistUpBtn" class="ghost-btn">Mover ↑</button>
+          <button id="movePlaylistDownBtn" class="ghost-btn">Mover ↓</button>
+        </div>
         <input id="searchInput" type="search" placeholder="Buscar música..." />
       </section>
 
       <section id="songList" class="song-list"></section>
+
+      <section class="panel compact-panel">
+        <label>Histórico</label>
+        <div id="historyList" class="history-list"></div>
+        <button id="clearHistoryBtn" class="ghost-btn">Limpar histórico</button>
+      </section>
     </aside>
 
     <main class="main">
       <header class="topbar">
         <button id="showSidebar" class="icon-btn">☰</button>
-        <img src="logo-playback-cifras.jpg" alt="Playback Cifras+" class="top-logo" />
         <div class="now">
           <strong id="songTitle">Nenhuma música carregada</strong>
           <span id="songMeta"></span>
@@ -79,14 +82,6 @@
       </header>
 
       <section id="viewer" class="viewer">
-        <div id="businessView" class="business-view" hidden>
-          <div class="business-card">
-            <div class="business-kicker">Playback Cifras+ · Business Alpha</div>
-            <h2 id="businessTitle">Músicas</h2>
-            <p id="businessText">A forma mais inteligente de organizar seu repertório.</p>
-            <div id="businessActions" class="business-actions"></div>
-          </div>
-        </div>
         <iframe id="pdfFrame" title="Cifra PDF"></iframe>
         <div id="pdfScroll" class="pdf-scroll" aria-label="Cifra PDF em modo rolagem"></div>
         <div id="emptyState" class="empty-state">
@@ -95,15 +90,8 @@
         </div>
       </section>
 
-      <footer class="playerbar playerbar-v12 playerbar-plus">
+      <footer class="playerbar playerbar-v12">
         <audio id="audio" preload="metadata"></audio>
-        <nav class="business-bottom-nav" aria-label="Navegação principal Playback Cifras+">
-          <button id="tabSongsBtn" class="business-tab active" type="button"><span>♪</span><strong>Músicas</strong></button>
-          <button id="tabCategoriesBtn" class="business-tab" type="button"><span>☰</span><strong>Categorias</strong></button>
-          <button id="tabFavoritesBtn" class="business-tab" type="button"><span>★</span><strong>Favoritos</strong></button>
-          <button id="tabSetlistsBtn" class="business-tab" type="button"><span>☑</span><strong>Setlists</strong></button>
-          <button id="tabSettingsBtn" class="business-tab" type="button"><span>⚙</span><strong>Configurações</strong></button>
-        </nav>
         <div class="timeline">
           <span id="currentTimeLabel">0:00</span>
           <input id="seekBar" class="seekbar" type="range" min="0" max="1000" value="0" step="1" aria-label="Progresso da música" />
@@ -117,6 +105,14 @@
       </footer>
     </main>
   </div>
+
+  <nav class="bottom-app-nav" aria-label="Navegação do app">
+    <button id="navSongsBtn" type="button"><span>🎵</span><strong>Músicas</strong></button>
+    <button id="navCategoriesBtn" type="button"><span>🗂</span><strong>Categorias</strong></button>
+    <button id="navFavoritesBtn" type="button"><span>⭐</span><strong>Favoritos</strong></button>
+    <button id="navSetlistsBtn" type="button"><span>📋</span><strong>Setlists</strong></button>
+    <button id="navSettingsBtn" type="button"><span>⚙</span><strong>Config.</strong></button>
+  </nav>
 
   <div id="toast" class="toast"></div>
 
