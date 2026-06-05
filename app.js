@@ -186,8 +186,17 @@ async function logout(){
   accessToken = '';
   localStorage.removeItem(STORAGE.token);
   localStorage.removeItem(STORAGE.connected);
+  // Ao sair, esquece automaticamente a pasta salva e a biblioteca local deste dispositivo.
+  localStorage.removeItem(STORAGE.folder);
+  localStorage.removeItem(STORAGE.library);
+  if(els.folderIdInput) els.folderIdInput.value = '';
+  library = [];
+  filteredSongs = [];
+  renderStyles();
+  renderSongs();
+  clearCurrent();
   updateLoginUi(false);
-  toast('Login Google removido deste dispositivo.');
+  toast('Login removido e pasta salva esquecida.');
 }
 
 function updateLoginUi(connected){
@@ -382,7 +391,12 @@ function applyFilters(){
 }
 
 function renderSongs(){
-  els.songList.innerHTML = filteredSongs.map((s,i)=>`<div class="song-item ${i===currentIndex?'active':''}" data-index="${i}"><strong>${escapeHtml(s.title)}</strong><span>${escapeHtml(s.style)}</span></div>`).join('');
+  els.songList.innerHTML = filteredSongs.map((s,i)=>`
+    <button type="button" class="song-item ${i===currentIndex?'active':''}" data-index="${i}">
+      <span class="song-art" aria-hidden="true">${String(i+1).padStart(2,'0')}</span>
+      <span class="song-copy"><strong>${escapeHtml(s.title)}</strong><small>${escapeHtml(s.style)}</small></span>
+      <span class="song-badge" aria-hidden="true">PDF · MP3</span>
+    </button>`).join('');
   els.songList.querySelectorAll('.song-item').forEach(el=>el.addEventListener('click',()=>{loadSong(Number(el.dataset.index), true); els.sidebar.classList.remove('open');}));
 }
 

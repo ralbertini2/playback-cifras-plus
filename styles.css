@@ -276,3 +276,50 @@ body.stage .main{--player:188px;--top:54px}.main{grid-template-rows:var(--top) m
 .toast{bottom:calc(var(--bottom-nav) + var(--player) + 18px);}
 @media(max-width:620px){:root{--bottom-nav:68px}.bottom-app-nav{gap:5px;padding-left:6px;padding-right:6px}.bottom-app-nav button{border-radius:13px}.bottom-app-nav button span{font-size:17px}.bottom-app-nav button strong{font-size:10px}.app,.main{height:calc(100dvh - var(--bottom-nav));max-height:calc(100dvh - var(--bottom-nav));}}
 @media(orientation:landscape) and (max-height:620px){:root{--bottom-nav:58px}.bottom-app-nav{height:var(--bottom-nav);padding-top:5px;padding-bottom:max(5px,env(safe-area-inset-bottom))}.bottom-app-nav button{display:flex;gap:6px}.bottom-app-nav button span{font-size:15px}.bottom-app-nav button strong{font-size:10px}}
+
+
+/* Playback Cifras+ Focus Stage — layout com prioridade total ao PDF */
+:root{--bottom-nav:0px;--player:136px;}
+.app,.main{height:100dvh !important;max-height:100dvh !important;}
+.bottom-app-nav{display:none !important;}
+.toast{bottom:calc(var(--player) + 22px) !important;}
+
+/* Drive mais limpo: mantém a lógica, esconde o ID manual e o botão de esquecer. */
+.hidden-drive-id,.hidden-action{display:none !important;}
+.drive-panel label{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#98a7bd;font-weight:900;}
+.drive-panel .secondary-btn{margin-top:10px;}
+.drive-panel .hint{font-size:12px;line-height:1.35;margin-bottom:0;color:#8e9bad;}
+
+/* Lista de músicas mais visual e parecida com produto comercial. */
+.song-list{display:grid;gap:10px;padding:12px 12px 34px;overflow:auto;min-height:0;flex:1 1 auto;}
+.song-item{width:100%;display:grid;grid-template-columns:52px minmax(0,1fr) auto;align-items:center;gap:12px;text-align:left;margin:0;padding:12px;border-radius:18px;background:linear-gradient(135deg,rgba(255,255,255,.055),rgba(255,255,255,.025));border:1px solid rgba(255,255,255,.09);box-shadow:0 10px 24px rgba(0,0,0,.18);color:#f6f8fb;}
+.song-item:hover{background:linear-gradient(135deg,rgba(255,255,255,.09),rgba(255,255,255,.04));transform:translateY(-1px);}
+.song-item.active{background:linear-gradient(135deg,#29b65b,#16833e);border-color:rgba(255,255,255,.22);box-shadow:0 14px 34px rgba(35,184,90,.26);}
+.song-art{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,rgba(245,189,34,.22),rgba(255,255,255,.06));border:1px solid rgba(255,255,255,.12);font-size:14px;font-weight:900;color:#ffd866;letter-spacing:.02em;}
+.song-item.active .song-art{background:rgba(255,255,255,.18);color:#fff;}
+.song-copy{display:grid;gap:3px;min-width:0;}
+.song-copy strong{display:block;font-size:15px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.song-copy small{display:block;color:#aeb9ca;font-size:12px;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.song-item.active .song-copy small{color:rgba(255,255,255,.82);}
+.song-badge{font-size:10px;font-weight:900;color:#aeb9ca;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.04);border-radius:999px;padding:6px 8px;white-space:nowrap;}
+.song-item.active .song-badge{color:#fff;background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.18);}
+
+/* Rodapé compacto continua visível, mas sem competir com a cifra. */
+.playerbar-v12{padding-bottom:max(24px,calc(env(safe-area-inset-bottom) + 14px));}
+.compact-controls{max-width:620px;}
+.compact-controls .control-tile{height:70px;}
+
+@media(max-width:900px){
+  :root{--player:132px;}
+  .sidebar{height:100dvh !important;max-height:100dvh !important;padding-bottom:28px !important;z-index:180;}
+  .sidebar.open{z-index:180;}
+  .song-list{padding-bottom:44px;}
+  .song-badge{display:none;}
+  .song-item{grid-template-columns:48px minmax(0,1fr);gap:10px;}
+  .song-art{width:48px;height:48px;border-radius:13px;}
+}
+@media(max-width:620px){
+  :root{--player:126px;}
+  .compact-controls .control-tile{height:64px;}
+  .playerbar-v12{padding-bottom:max(26px,calc(env(safe-area-inset-bottom) + 16px));}
+}

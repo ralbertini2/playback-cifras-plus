@@ -23,15 +23,15 @@
         <div id="loginStatus" class="status">Desconectado</div>
       </section>
 
-      <section class="panel">
-        <label>Pasta principal do Drive</label>
-        <div class="row gap">
-          <input id="folderIdInput" type="text" placeholder="ID da pasta principal" autocomplete="off" />
+      <section class="panel drive-panel">
+        <label>Google Drive</label>
+        <div class="row gap hidden-drive-id" aria-hidden="true">
+          <input id="folderIdInput" type="text" placeholder="ID da pasta principal" autocomplete="off" tabindex="-1" />
         </div>
         <button id="pickFolderBtn" class="secondary-btn">Selecionar pasta no Drive</button>
         <button id="refreshBtn" class="secondary-btn">Atualizar biblioteca</button>
-        <button id="clearFolderBtn" class="ghost-btn">Esquecer pasta salva</button>
-        <p class="hint">Estrutura: selecione a pasta principal com subpastas por estilo ou uma pasta direta de músicas. Em cada pasta, PDF e MP3 devem ter o mesmo nome.</p>
+        <button id="clearFolderBtn" class="ghost-btn hidden-action" type="button" aria-hidden="true" tabindex="-1">Esquecer pasta salva</button>
+        <p class="hint">Selecione uma pasta principal com subpastas por estilo ou uma pasta direta de músicas. PDF e MP3 devem ter o mesmo nome.</p>
       </section>
 
       <section class="panel">
@@ -106,13 +106,7 @@
     </main>
   </div>
 
-  <nav class="bottom-app-nav" aria-label="Navegação do app">
-    <button id="navSongsBtn" type="button"><span>🎵</span><strong>Músicas</strong></button>
-    <button id="navCategoriesBtn" type="button"><span>🗂</span><strong>Categorias</strong></button>
-    <button id="navFavoritesBtn" type="button"><span>⭐</span><strong>Favoritos</strong></button>
-    <button id="navSetlistsBtn" type="button"><span>📋</span><strong>Setlists</strong></button>
-    <button id="navSettingsBtn" type="button"><span>⚙</span><strong>Config.</strong></button>
-  </nav>
+
 
   <div id="toast" class="toast"></div>
 
